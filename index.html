@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QR</title>
+<title>Lobstar QR</title>
 
 <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
 
@@ -15,28 +15,41 @@
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
 }
 
+/* BACKGROUND IMAGE */
 body {
-  background: #f5f5f7;
-  color: #1d1d1f;
+  background: url("bg.jpg") no-repeat center center/cover;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+}
+
+/* DARK OVERLAY (BIAR ELEGAN) */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
 }
 
 /* CONTAINER */
 .app {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 380px;
   padding: 20px;
 }
 
-/* CARD */
+/* CARD GLASS */
 .card {
-  background: #ffffff;
-  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 22px;
   padding: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 /* TITLE */
@@ -44,21 +57,25 @@ body {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 14px;
+  color: #fff;
+  text-align: center;
 }
 
 /* INPUT */
 input {
   width: 100%;
   padding: 14px;
-  border-radius: 12px;
-  border: 1px solid #e5e5ea;
+  border-radius: 14px;
+  border: none;
   font-size: 14px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   outline: none;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
 }
 
-input:focus {
-  border-color: #0071e3;
+input::placeholder {
+  color: #bbb;
 }
 
 /* FILE */
@@ -66,46 +83,53 @@ input:focus {
   display: block;
   text-align: center;
   padding: 12px;
-  border-radius: 12px;
-  border: 1px dashed #d2d2d7;
+  border-radius: 14px;
+  border: 1px dashed rgba(255,255,255,0.3);
   font-size: 13px;
-  color: #6e6e73;
+  color: #ccc;
   margin-bottom: 12px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 .file.active {
-  border-color: #0071e3;
-  color: #0071e3;
+  border-color: #00ffcc;
+  color: #00ffcc;
 }
 
 /* BUTTON */
 button {
   width: 100%;
   padding: 14px;
-  border-radius: 14px;
+  border-radius: 16px;
   border: none;
   font-size: 15px;
   cursor: pointer;
   margin-top: 6px;
+  transition: all 0.15s ease;
 }
 
 /* PRIMARY */
 .primary {
-  background: #0071e3;
+  background: linear-gradient(135deg, #00ffcc, #0071e3);
   color: white;
 }
 
 /* SECONDARY */
 .secondary {
-  background: #f2f2f2;
-  color: #1d1d1f;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+/* PRESS EFFECT */
+button:active {
+  transform: scale(0.96);
 }
 
 /* QR */
 #qr canvas {
   margin-top: 18px;
-  border-radius: 16px;
+  border-radius: 18px;
 }
 
 /* RESULT */
@@ -123,7 +147,7 @@ button {
 
     <div class="title">LOBSTAR QR</div>
 
-    <input id="data" placeholder="Enter text, link, wallet, or WhatsApp">
+    <input id="data" placeholder="Enter text / wallet / WhatsApp">
 
     <label class="file" id="fileBox">
       <span id="fileText">Add logo (optional)</span>
@@ -151,7 +175,7 @@ document.getElementById("logo").addEventListener("change", function() {
 
   if (this.files.length > 0) {
     box.classList.add("active");
-    text.innerText = "Logo added";
+    text.innerText = "✔ Logo added";
   }
 });
 
@@ -162,7 +186,7 @@ function generateQR() {
 
   if (!data) return alert("Enter something");
 
-  /* AUTO DETECT WA */
+  /* AUTO WA */
   if (/^08/.test(data)) {
     data = "https://wa.me/62" + data.slice(1);
   }
@@ -179,7 +203,7 @@ function generateQR() {
     image: logoURL,
 
     dotsOptions: {
-      color: "#000000",
+      color: "#00ffcc",
       type: "rounded"
     },
 
@@ -192,8 +216,8 @@ function generateQR() {
     },
 
     imageOptions: {
-      margin: 10,
-      imageSize: 0.38,
+      margin: 8,
+      imageSize: 0.4,
       hideBackgroundDots: true
     }
   });
@@ -204,7 +228,7 @@ function generateQR() {
 /* DOWNLOAD */
 function downloadQR() {
   if (!qr) return alert("Generate first");
-  qr.download({ name: "qr", extension: "png" });
+  qr.download({ name: "lobstar-qr", extension: "png" });
 }
 </script>
 
