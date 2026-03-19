@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WA QR Generator</title>
+
+<script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Inter, sans-serif;
+}
+
+body {
+  background: #0b0b0c;
+  color: #e4e4e7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.app {
+  width: 100%;
+  max-width: 420px;
+  padding: 16px;
+}
+
+.title {
+  text-align: center;
+  font-size: 16px;
+  color: #71717a;
+  margin-bottom: 16px;
+}
+
+/* CARD */
+.card {
+  background: linear-gradient(180deg, #111113 70%, rgba(34,197,94,0.08));
+  border: 1px solid rgba(34,197,94,0.4);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 
+    0 0 25px rgba(34,197,94,0.15),
+    inset 0 -20px 40px rgba(34,197,94,0.05);
+}
+
+/* INPUT */
+input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #1f1f23;
+  background: #0f0f11;
+  color: white;
+  margin-bottom: 12px;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.25s ease;
+}
+
+/* PRIMARY */
+.primary {
+  background: linear-gradient(135deg, #22c55e, #4ade80);
+  color: white;
+  box-shadow: 0 4px 15px rgba(34,197,94,0.3);
+}
+
+.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(34,197,94,0.5);
+}
+
+/* RESULT */
+.result {
+  margin-top: 18px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: 0.3s;
+}
+
+.result.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* QR */
+#qr canvas {
+  margin-top: 14px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(34,197,94,0.25);
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="title">WA QR Generator</div>
+
+  <div class="card">
+
+    <input id="phone" placeholder="Phone number (08xxx)">
+    <input id="message" placeholder="Message (optional)">
+
+    <button class="primary" onclick="generateQR()">Generate QR</button>
+
+    <div id="result" class="result">
+      <div id="qr"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+let qr;
+
+function formatNumber(num) {
+  num = num.replace(/\D/g, "");
+
+  if (num.startsWith("0")) {
+    return "62" + num.substring(1);
+  }
+
+  if (num.startsWith("62")) {
+    return num;
+  }
+
+  return num;
+}
+
+function generateQR() {
+  const phoneInput = document.getElementById("phone").value;
+  const message = document.getElementById("message").value;
+
+  if (!phoneInput) return alert("Enter phone number");
+
+  const phone = formatNumber(phoneInput);
+
+  let url = "https://wa.me/" + phone;
+
+  if (message) {
+    url += "?text=" + encodeURIComponent(message);
+  }
+
+  const qrContainer = document.getElementById("qr");
+  qrContainer.innerHTML = "";
+
+  qr = new QRCodeStyling({
+    width: 260,
+    height: 260,
+    data: url,
+
+    dotsOptions: {
+      color: "#22c55e",
+      type: "rounded"
+    },
+
+    cornersSquareOptions: {
+      type: "extra-rounded",
+      color: "#22c55e"
+    },
+
+    backgroundOptions: {
+      color: "#ffffff"
+    }
+  });
+
+  qr.append(qrContainer);
+
+  document.getElementById("result").classList.add("show");
+}
+</script>
+
+</body>
+  </html>
