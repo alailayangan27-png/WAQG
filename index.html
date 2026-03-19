@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SolQR</title>
+<title>QR</title>
 
 <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
 
@@ -12,87 +12,38 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
 }
 
 body {
-  background: #0b0b0c;
-  color: #e4e4e7;
-}
-
-/* HERO */
-.hero {
-  text-align: center;
-  padding: 80px 20px 40px;
-}
-
-.hero h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
-
-.hero p {
-  color: #9ca3af;
-  margin-bottom: 20px;
-}
-
-.cta {
-  padding: 12px 20px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #2563eb, #3b82f6);
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-/* FEATURES */
-.features {
+  background: #f5f5f7;
+  color: #1d1d1f;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
-.feature {
-  background: #111113;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid #1f1f23;
-}
-
-/* APP */
+/* CONTAINER */
 .app {
-  max-width: 420px;
-  margin: 40px auto;
-  padding: 16px;
-}
-
-.card {
-  background: #111113;
-  border-radius: 20px;
+  width: 100%;
+  max-width: 380px;
   padding: 20px;
-  border: 1px solid #1f1f23;
 }
 
-/* SWITCH */
-.switch {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+/* CARD */
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
-.switch button {
-  flex: 1;
-  padding: 12px;
-  border-radius: 12px;
-  border: none;
-  background: #18181b;
-  color: #aaa;
-}
-
-.switch .active {
-  background: #2563eb;
-  color: white;
+/* TITLE */
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 14px;
 }
 
 /* INPUT */
@@ -100,83 +51,89 @@ input {
   width: 100%;
   padding: 14px;
   border-radius: 12px;
-  border: 1px solid #1f1f23;
-  background: #0f0f11;
-  color: white;
+  border: 1px solid #e5e5ea;
+  font-size: 14px;
   margin-bottom: 10px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #0071e3;
+}
+
+/* FILE */
+.file {
+  display: block;
+  text-align: center;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px dashed #d2d2d7;
+  font-size: 13px;
+  color: #6e6e73;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.file.active {
+  border-color: #0071e3;
+  color: #0071e3;
 }
 
 /* BUTTON */
-.generate {
+button {
   width: 100%;
   padding: 14px;
   border-radius: 14px;
   border: none;
-  background: #2563eb;
-  color: white;
+  font-size: 15px;
   cursor: pointer;
+  margin-top: 6px;
+}
+
+/* PRIMARY */
+.primary {
+  background: #0071e3;
+  color: white;
+}
+
+/* SECONDARY */
+.secondary {
+  background: #f2f2f2;
+  color: #1d1d1f;
 }
 
 /* QR */
 #qr canvas {
-  margin-top: 14px;
+  margin-top: 18px;
   border-radius: 16px;
 }
 
 /* RESULT */
 .result {
-  margin-top: 16px;
   text-align: center;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: 0.3s;
-}
-
-.result.show {
-  opacity: 1;
-  transform: translateY(0);
 }
 </style>
 </head>
 
 <body>
 
-<!-- HERO -->
-<section class="hero">
-  <h1>SolQR</h1>
-  <p>Generate Wallet & WhatsApp QR instantly</p>
-  <button class="cta" onclick="scrollToApp()">Start Now</button>
-</section>
-
-<!-- FEATURES -->
-<section class="features">
-  <div class="feature">⚡ Instant QR generation</div>
-  <div class="feature">💬 WhatsApp direct chat QR</div>
-  <div class="feature">💰 Wallet QR for crypto</div>
-</section>
-
-<!-- APP -->
-<div class="app" id="app">
+<div class="app">
 
   <div class="card">
 
-    <div class="switch">
-      <button id="walletBtn" class="active" onclick="setMode('wallet')">Wallet</button>
-      <button id="waBtn" onclick="setMode('wa')">WhatsApp</button>
-    </div>
+    <div class="title">QR Generator</div>
 
-    <div id="walletInput">
-      <input id="wallet" placeholder="Wallet address">
-    </div>
+    <input id="data" placeholder="Enter text, link, wallet, or WhatsApp">
 
-    <div id="waInput" style="display:none;">
-      <input id="phone" placeholder="Phone number">
-      <input id="message" placeholder="Message (optional)">
-    </div>
+    <label class="file" id="fileBox">
+      <span id="fileText">Add logo (optional)</span>
+      <input type="file" id="logo" hidden>
+    </label>
 
-    <button class="generate" onclick="generateQR()">Generate QR</button>
+    <button class="primary" onclick="generateQR()">Generate</button>
+    <button class="secondary" onclick="downloadQR()">Download</button>
 
-    <div id="result" class="result">
+    <div class="result">
       <div id="qr"></div>
     </div>
 
@@ -185,58 +142,69 @@ input {
 </div>
 
 <script>
-let mode = "wallet";
 let qr;
 
-function scrollToApp() {
-  document.getElementById("app").scrollIntoView({ behavior: "smooth" });
-}
+/* FILE */
+document.getElementById("logo").addEventListener("change", function() {
+  const box = document.getElementById("fileBox");
+  const text = document.getElementById("fileText");
 
-function setMode(m) {
-  mode = m;
+  if (this.files.length > 0) {
+    box.classList.add("active");
+    text.innerText = "Logo added";
+  }
+});
 
-  document.getElementById("walletBtn").classList.toggle("active", m === "wallet");
-  document.getElementById("waBtn").classList.toggle("active", m === "wa");
-
-  document.getElementById("walletInput").style.display = m === "wallet" ? "block" : "none";
-  document.getElementById("waInput").style.display = m === "wa" ? "block" : "none";
-}
-
-function formatNumber(num) {
-  num = num.replace(/\D/g, "");
-  if (num.startsWith("0")) return "62" + num.slice(1);
-  return num;
-}
-
+/* GENERATE */
 function generateQR() {
-  let data = "";
-  let color = "#2563eb";
+  let data = document.getElementById("data").value.trim();
+  const logoFile = document.getElementById("logo").files[0];
 
-  if (mode === "wallet") {
-    data = document.getElementById("wallet").value;
-  } else {
-    let phone = formatNumber(document.getElementById("phone").value);
-    let msg = document.getElementById("message").value;
-    data = "https://wa.me/" + phone;
-    if (msg) data += "?text=" + encodeURIComponent(msg);
-    color = "#22c55e";
+  if (!data) return alert("Enter something");
+
+  /* AUTO DETECT WA */
+  if (/^08/.test(data)) {
+    data = "https://wa.me/62" + data.slice(1);
   }
 
   const qrContainer = document.getElementById("qr");
   qrContainer.innerHTML = "";
 
-  qr = new QRCodeStyling({
-    width: 260,
-    height: 260,
-    data: data,
+  const logoURL = logoFile ? URL.createObjectURL(logoFile) : "";
 
-    dotsOptions: { color: color, type: "rounded" },
-    cornersSquareOptions: { type: "extra-rounded", color: color },
-    backgroundOptions: { color: "#ffffff" }
+  qr = new QRCodeStyling({
+    width: 240,
+    height: 240,
+    data: data,
+    image: logoURL,
+
+    dotsOptions: {
+      color: "#000000",
+      type: "rounded"
+    },
+
+    cornersSquareOptions: {
+      type: "extra-rounded"
+    },
+
+    backgroundOptions: {
+      color: "#ffffff"
+    },
+
+    imageOptions: {
+      margin: 10,
+      imageSize: 0.38,
+      hideBackgroundDots: true
+    }
   });
 
   qr.append(qrContainer);
-  document.getElementById("result").classList.add("show");
+}
+
+/* DOWNLOAD */
+function downloadQR() {
+  if (!qr) return alert("Generate first");
+  qr.download({ name: "qr", extension: "png" });
 }
 </script>
 
