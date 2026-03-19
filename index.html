@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WA QR Generator</title>
+<title>Multi QR App</title>
 
 <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
 
@@ -39,13 +39,32 @@ body {
 
 /* CARD */
 .card {
-  background: linear-gradient(180deg, #111113 70%, rgba(34,197,94,0.08));
-  border: 1px solid rgba(34,197,94,0.4);
+  background: #111113;
+  border: 1px solid #1f1f23;
   border-radius: 20px;
   padding: 20px;
-  box-shadow: 
-    0 0 25px rgba(34,197,94,0.15),
-    inset 0 -20px 40px rgba(34,197,94,0.05);
+}
+
+/* MODE SWITCH */
+.switch {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.switch button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #18181b;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.switch button.active {
+  background: #2563eb;
+  color: white;
 }
 
 /* INPUT */
@@ -56,11 +75,28 @@ input {
   border: 1px solid #1f1f23;
   background: #0f0f11;
   color: white;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+}
+
+/* FILE */
+.file {
+  display: block;
+  padding: 14px;
+  border-radius: 12px;
+  text-align: center;
+  background: #0f0f11;
+  border: 1px dashed #2a2a2f;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.file.active {
+  border: 1px solid #22c55e;
+  color: #22c55e;
 }
 
 /* BUTTON */
-button {
+.generate {
   width: 100%;
   padding: 14px;
   border-radius: 14px;
@@ -68,24 +104,14 @@ button {
   font-weight: 600;
   cursor: pointer;
   margin-top: 10px;
-  transition: all 0.25s ease;
-}
-
-/* PRIMARY */
-.primary {
-  background: linear-gradient(135deg, #22c55e, #4ade80);
+  transition: 0.2s;
+  background: #2563eb;
   color: white;
-  box-shadow: 0 4px 15px rgba(34,197,94,0.3);
-}
-
-.primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(34,197,94,0.5);
 }
 
 /* RESULT */
 .result {
-  margin-top: 18px;
+  margin-top: 16px;
   text-align: center;
   opacity: 0;
   transform: translateY(10px);
@@ -101,7 +127,7 @@ button {
 #qr canvas {
   margin-top: 14px;
   border-radius: 16px;
-  box-shadow: 0 0 20px rgba(34,197,94,0.25);
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 </style>
 </head>
@@ -110,15 +136,36 @@ button {
 
 <div class="app">
 
-  <div class="title">WA QR Generator</div>
+  <div class="title">Multi QR Generator</div>
 
   <div class="card">
 
-    <input id="phone" placeholder="Phone number (08xxx)">
-    <input id="message" placeholder="Message (optional)">
+    <!-- SWITCH -->
+    <div class="switch">
+      <button id="walletBtn" class="active" onclick="setMode('wallet')">Wallet</button>
+      <button id="waBtn" onclick="setMode('wa')">WhatsApp</button>
+    </div>
 
-    <button class="primary" onclick="generateQR()">Generate QR</button>
+    <!-- WALLET -->
+    <div id="walletInput">
+      <input id="wallet" placeholder="Wallet address">
+    </div>
 
+    <!-- WHATSAPP -->
+    <div id="waInput" style="display:none;">
+      <input id="phone" placeholder="Phone number (08xxx)">
+      <input id="message" placeholder="Message (optional)">
+    </div>
+
+    <!-- LOGO -->
+    <label class="file" id="fileBox">
+      <span id="fileText">Upload logo</span>
+      <input type="file" id="logo">
+    </label>
+
+    <button class="generate" onclick="generateQR()">Generate QR</button>
+
+    <!-- RESULT -->
     <div id="result" class="result">
       <div id="qr"></div>
     </div>
@@ -128,35 +175,66 @@ button {
 </div>
 
 <script>
+let mode = "wallet";
 let qr;
 
+/* SWITCH MODE */
+function setMode(m) {
+  mode = m;
+
+  document.getElementById("walletBtn").classList.toggle("active", m === "wallet");
+  document.getElementById("waBtn").classList.toggle("active", m === "wa");
+
+  document.getElementById("walletInput").style.display = m === "wallet" ? "block" : "none";
+  document.getElementById("waInput").style.display = m === "wa" ? "block" : "none";
+}
+
+/* FILE CHECK */
+document.getElementById("logo").addEventListener("change", function() {
+  const fileBox = document.getElementById("fileBox");
+  const fileText = document.getElementById("fileText");
+
+  if (this.files.length > 0) {
+    fileBox.classList.add("active");
+    fileText.innerText = "✔ Logo selected";
+  }
+});
+
+/* FORMAT WA */
 function formatNumber(num) {
   num = num.replace(/\D/g, "");
 
-  if (num.startsWith("0")) {
-    return "62" + num.substring(1);
-  }
-
-  if (num.startsWith("62")) {
-    return num;
-  }
+  if (num.startsWith("0")) return "62" + num.slice(1);
+  if (num.startsWith("62")) return num;
 
   return num;
 }
 
+/* GENERATE */
 function generateQR() {
-  const phoneInput = document.getElementById("phone").value;
-  const message = document.getElementById("message").value;
+  let data = "";
+  let color = "#2563eb";
 
-  if (!phoneInput) return alert("Enter phone number");
-
-  const phone = formatNumber(phoneInput);
-
-  let url = "https://wa.me/" + phone;
-
-  if (message) {
-    url += "?text=" + encodeURIComponent(message);
+  if (mode === "wallet") {
+    const wallet = document.getElementById("wallet").value.trim();
+    if (!wallet) return alert("Enter wallet");
+    data = wallet;
   }
+
+  if (mode === "wa") {
+    const phone = formatNumber(document.getElementById("phone").value);
+    const msg = document.getElementById("message").value;
+
+    if (!phone) return alert("Enter phone");
+
+    data = "https://wa.me/" + phone;
+    if (msg) data += "?text=" + encodeURIComponent(msg);
+
+    color = "#22c55e";
+  }
+
+  const logoFile = document.getElementById("logo").files[0];
+  const logoURL = logoFile ? URL.createObjectURL(logoFile) : "";
 
   const qrContainer = document.getElementById("qr");
   qrContainer.innerHTML = "";
@@ -164,28 +242,34 @@ function generateQR() {
   qr = new QRCodeStyling({
     width: 260,
     height: 260,
-    data: url,
+    data: data,
+    image: logoURL,
 
     dotsOptions: {
-      color: "#22c55e",
+      color: color,
       type: "rounded"
     },
 
     cornersSquareOptions: {
       type: "extra-rounded",
-      color: "#22c55e"
+      color: color
     },
 
     backgroundOptions: {
       color: "#ffffff"
+    },
+
+    imageOptions: {
+      margin: 8,
+      imageSize: 0.42,
+      hideBackgroundDots: true
     }
   });
 
   qr.append(qrContainer);
-
   document.getElementById("result").classList.add("show");
 }
 </script>
 
 </body>
-  </html>
+</html>
