@@ -29,8 +29,8 @@ body::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.35); /* lebih transparan */
+  backdrop-filter: blur(4px);   /* blur dikurangi */
 }
 
 /* CONTAINER */
@@ -180,13 +180,24 @@ document.getElementById("logo").addEventListener("change", function() {
 });
 
 /* GENERATE */
+function randomColor() {
+  const colors = [
+    ["#00ffcc", "#0071e3"],
+    ["#ff00cc", "#3333ff"],
+    ["#00ff00", "#009933"],
+    ["#ff9900", "#ff3300"],
+    ["#00ccff", "#0066ff"],
+    ["#ff0066", "#9900ff"]
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
 function generateQR() {
   let data = document.getElementById("data").value.trim();
   const logoFile = document.getElementById("logo").files[0];
 
   if (!data) return alert("Enter something");
 
-  /* AUTO WA */
   if (/^08/.test(data)) {
     data = "https://wa.me/62" + data.slice(1);
   }
@@ -196,6 +207,8 @@ function generateQR() {
 
   const logoURL = logoFile ? URL.createObjectURL(logoFile) : "";
 
+  const [color1, color2] = randomColor();
+
   qr = new QRCodeStyling({
     width: 240,
     height: 240,
@@ -203,12 +216,20 @@ function generateQR() {
     image: logoURL,
 
     dotsOptions: {
-      color: "#00ffcc",
-      type: "rounded"
+      type: "rounded",
+      gradient: {
+        type: "linear",
+        rotation: Math.random() * Math.PI,
+        colorStops: [
+          { offset: 0, color: color1 },
+          { offset: 1, color: color2 }
+        ]
+      }
     },
 
     cornersSquareOptions: {
-      type: "extra-rounded"
+      type: "extra-rounded",
+      color: color1
     },
 
     backgroundOptions: {
@@ -217,7 +238,7 @@ function generateQR() {
 
     imageOptions: {
       margin: 8,
-      imageSize: 0.4,
+      imageSize: 0.42,
       hideBackgroundDots: true
     }
   });
